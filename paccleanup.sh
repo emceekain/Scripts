@@ -109,6 +109,10 @@ do
     cd ..
 done
 
+# VSCode(-OSS) Extensions
+code --list-extensions --show-versions > $DIR/notManagedByPacman/vscode/${HOSTNAME}.txt
+codium --list-extensions --show-versions > $DIR/notManagedByPacman/vscodium/${HOSTNAME}.txt
+
 # List running services.
 DIR=$HOME/Documents/Software/dotfiles/services
 touch $DIR
