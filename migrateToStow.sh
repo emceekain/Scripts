@@ -1,19 +1,21 @@
-PATH_TO_MIGRATE=$1
+FILE_PATH=$1
 FILE_PATTERN=$2
 PACKAGE=$3
 
 DOTFILES="${HOME}/dotfiles"
-cd ${DOTFILES}
+SRC=${DOTFILES}/${FILE_PATH}
+DEST=${DOTFILES}/${PACKAGE}/${FILE_PATH}
 
-mkdir --parents ${PACKAGE}/${PATH_TO_MIGRATE}
-git mv -n -v ${PATH_TO_MIGRATE}/${FILE_PATTERN} ${PACKAGE}/${PATH_TO_MIGRATE}
+mkdir --parents ${DEST}
+cd $DOTFILES
+git mv -n -v ${SRC}/${FILE_PATTERN} {DEST}
 
 echo "Everything look good? (1) Yes (2) No."
 read ANSWER
 if [ $ANSWER == "1" ]
 then
     # actually perform the move
-    git mv ${DOTFILES}/${PATH_TO_MIGRATE}/${FILE_PATTERN} ${DOTFILES}/${PACKAGE}/${PATH_TO_MIGRATE}
+    git mv ${SRC}/${FILE_PATTERN} ${DEST}
 else
     exit 1
 fi

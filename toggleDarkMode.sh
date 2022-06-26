@@ -1,6 +1,7 @@
 mode=$1
-alacritty_config=$HOME/.config/alacritty/alacritty.yml
-vimrc=$HOME/.vimrc
+DOTFILES=$HOME/dotfiles
+alacritty_config=${DOTFILES}/alacritty/.config/alacritty/alacritty.yml
+vimrc=${DOTFILES}/vim/.vimrc
 gtk_settings=$HOME/.config/gtk-3.0/settings.ini
 
 if [ $mode = "dark" ]
