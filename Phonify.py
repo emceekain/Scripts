@@ -2,6 +2,7 @@ import shutil
 import sys
 import os
 import re
+from datetime import date
 
 EXISTING_FILES = 0
 NEW_FILES = 0
@@ -9,12 +10,15 @@ NEW_FILES = 0
 RELATIVE_PLAYLIST_PATH = sys.argv[1]
 DEVICE = sys.argv[2]
 MODE = sys.argv[3]
-PLAYLIST_NAME = (RELATIVE_PLAYLIST_PATH.split('/')[-1:])[0]
-if MODE == 'utf8':
-    # The m3u8 filetype indicates the file uses UTF-8 encoding.  This is
-    # necessary to get Poweramp to read any file with 'special' characters in
-    # the name.
-    PLAYLIST_NAME += '8'
+DATED = bool(sys.argv[4])
+# file name is everything after the _last_ slash
+RELATIVE_FILE_NAME = RELATIVE_PLAYLIST_PATH.split('/')[-1]
+# extension is everything after the _last_ period
+FILE_NAME_COMPONENTS = RELATIVE_FILE_NAME.split('.')
+PLAYLIST_NAME = ".".join(FILE_NAME_COMPONENTS[:-1])
+EXTENSION = FILE_NAME_COMPONENTS[-1]
+if DATED:
+    PLAYLIST_NAME += f"_{date.today()}"
 
 deviceToPathConversion = {
     'primary': '/run/media/brent/Files/Syncthing/Shared Music/Primary/',
@@ -31,8 +35,9 @@ if DEVICE not in deviceToPathConversion.keys():
     # Need to stop the program here.
 
 NEW_ROOT = deviceToPathConversion[DEVICE]
+PLAYLIST_NAME_FULL = NEW_ROOT + PLAYLIST_NAME + '.' + EXTENSION
 
-with open(NEW_ROOT + PLAYLIST_NAME, 'w', encoding='utf-8') as NEW_PLAYLIST:
+with open(PLAYLIST_NAME_FULL, 'w', encoding='utf-8') as NEW_PLAYLIST:
 
     with open(RELATIVE_PLAYLIST_PATH, 'r', encoding='utf-8') as ORIGINAL_PLAYLIST:
         lines = ORIGINAL_PLAYLIST.read().splitlines()
@@ -54,6 +59,12 @@ with open(NEW_ROOT + PLAYLIST_NAME, 'w', encoding='utf-8') as NEW_PLAYLIST:
 
 print(f"{NEW_FILES} files copied and {EXISTING_FILES} already in place for a "
       + f"total of {NEW_FILES+EXISTING_FILES} in the playlist.")
+
+print(f"{PLAYLIST_NAME}.m3u has been successfully copied.")
+if MODE == 'utf8':
+    # make a utf-8 compatible copy; may no longer be necessary for PowerAmp
+    shutil.copy2(PLAYLIST_NAME_FULL, PLAYLIST_NAME_FULL + "8")
+    print(f"{PLAYLIST_NAME}.m3u8 has been successfully copied as well.")
 
 # for line in open(playlist,'r').read().splitlines():
 #    if not line.startswith('#EXT') and len(line)>3:
