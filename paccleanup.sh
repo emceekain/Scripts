@@ -48,7 +48,7 @@ pacman -Qqe > $DIR/explicit/by_name/${HOSTNAME}.txt
 # In the future, would like to make the package lists date stamped.  Why?
 
 # Now partition installed packages based on the toolkit they require.
-declare -a arr=(base qt5-base qt6-base gtk2 gtk3 python python2 perl js78 php ruby nodejs ncurses tcl java-runtime java-environment dotnet-runtime)
+declare -a arr=(base qt5-base qt6-base gtk2 gtk3 gtk4 python python2 perl js91 php ruby nodejs ncurses tcl java-runtime java-environment dotnet-runtime)
 
 for PACKAGE in ${arr[@]}
 do
@@ -96,18 +96,21 @@ gem list > $DIR/notManagedByPacman/ruby-gems/${HOSTNAME}.txt
 
 # Find manually installed node packages.
 npm list > $DIR/notManagedByPacman/nodejs/${HOSTNAME}.txt
-npm list -g >> $DIR/notManagedByPacman/nodejs/${HOSTNAME}.txt
+npm list --location=global >> $DIR/notManagedByPacman/nodejs/${HOSTNAME}.txt
 
 # Vim Packages
 cd ~/.vim/bundle/
 PLUGINS=(*)
-echo "package,dateUpdated" > $DIR/notManagedByPacman/vim/${HOSTNAME}.csv
+VIM_FILE=$DIR/notManagedByPacman/vim/${HOSTNAME}.csv
+echo "dateUpdated,package" > $VIM_FILE
 for PLUGIN in ${PLUGINS[@]}
 do
     cd $PLUGIN
-    echo $PLUGIN,$(git log -n 1 --format=%cd --date=short) >> $DIR/notManagedByPacman/vim/${HOSTNAME}.csv
+    echo $(git log -n 1 --format=%cd --date=short),$PLUGIN >> $VIM_FILE
     cd ..
 done
+(head -n 1 $VIM_FILE; tail -n +2 $VIM_FILE | sort -r) > temp.csv
+mv temp.csv $VIM_FILE
 
 # VSCode(-OSS) Extensions
 code --list-extensions --show-versions > $DIR/notManagedByPacman/vscode/${HOSTNAME}.txt
