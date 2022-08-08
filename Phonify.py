@@ -10,14 +10,14 @@ NEW_FILES = 0
 RELATIVE_PLAYLIST_PATH = sys.argv[1]
 DEVICE = sys.argv[2]
 MODE = sys.argv[3]
-DATED = bool(sys.argv[4])
+DATED = sys.argv[4]
 # file name is everything after the _last_ slash
 RELATIVE_FILE_NAME = RELATIVE_PLAYLIST_PATH.split('/')[-1]
 # extension is everything after the _last_ period
 FILE_NAME_COMPONENTS = RELATIVE_FILE_NAME.split('.')
 PLAYLIST_NAME = ".".join(FILE_NAME_COMPONENTS[:-1])
 EXTENSION = FILE_NAME_COMPONENTS[-1]
-if DATED:
+if DATED == 'true':
     PLAYLIST_NAME += f"_{date.today()}"
 
 deviceToPathConversion = {
