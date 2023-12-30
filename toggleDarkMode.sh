@@ -19,14 +19,14 @@ then
     sed -i -e "s/# $dark_alacritty_theme/$dark_alacritty_theme/" "$alacritty_config"
 
     # gtk
-    for settings in $settingsFiles; do
+    for settings in "${settingsFiles[@]}"; do
         sed -i -e "s/gtk-application-prefer-dark-theme=false/gtk-application-prefer-dark-theme=true/" "$settings"
     done
     #sed -i -e "s/gtk-theme-name=.*/gtk-theme-name=Equilux-compact/" $gtk3_settings
     #sed -i -e "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Dark/" $gtk3_settings
 
     echo "Dark theme enabled."
-elif [ $mode = "light" -o $mode = "mixed" ]
+elif [ $mode = "light" ] || [ $mode = "mixed" ]
 then 
     $HOME/.local/bin/jt -t grade3
 
@@ -38,7 +38,7 @@ then
     sed -i -e "s/# $light_alacritty_theme/$light_alacritty_theme/" $alacritty_config
 
     # gtk
-    for settings in $settingsFiles; do
+    for settings in "${settingsFiles[@]}"; do
         sed -i -e "s/gtk-application-prefer-dark-theme=true/gtk-application-prefer-dark-theme=false/" "$settings"
     done
     if [ $mode = "light" ]
