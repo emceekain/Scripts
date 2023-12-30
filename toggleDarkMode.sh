@@ -1,8 +1,12 @@
 mode=$1
 DOTFILES=$HOME/dotfiles
-alacritty_config=${DOTFILES}/alacritty/.config/alacritty/alacritty.yml
+alacritty_config=${DOTFILES}/alacritty/.config/alacritty/alacritty.toml
+light_alacritty_theme="import = \[\"~\/.config\/alacritty\/themes\/PencilLight.toml\"\]"
+dark_alacritty_theme="import = \[\"~\/.config\/alacritty\/themes\/Molokai.toml\"\]"
 vimrc=${DOTFILES}/vim/.vimrc
-gtk_settings=$HOME/.config/gtk-3.0/settings.ini
+gtk3_settings=$HOME/.config/gtk-3.0/settings.ini
+gtk4_settings=$HOME/.config/gtk-4.0/settings.ini
+settingsFiles=("$gtk3_settings $gtk4_settings")
 
 if [ $mode = "dark" ]
 then 
@@ -11,12 +15,15 @@ then
     sed -i -e "s/set background=light/set background=dark/" $vimrc
 
     # alacritty
-    sed -i -e "s/ - ~\/.config\/alacritty\/themes\/PencilLight.yml/ #- ~\/.config\/alacritty\/themes\/PencilLight.yml/" $alacritty_config
-    sed -i -e "s/#- ~\/.config\/alacritty\/themes\/Molokai.yml/- ~\/.config\/alacritty\/themes\/Molokai.yml/" $alacritty_config
+    sed -i -e "s/^$light_alacritty_theme/# $light_alacritty_theme/" "$alacritty_config"
+    sed -i -e "s/# $dark_alacritty_theme/$dark_alacritty_theme/" "$alacritty_config"
 
     # gtk
-    #sed -i -e "s/gtk-theme-name=.*/gtk-theme-name=Equilux-compact/" $gtk_settings
-    #sed -i -e "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Dark/" $gtk_settings
+    for settings in $settingsFiles; do
+        sed -i -e "s/gtk-application-prefer-dark-theme=false/gtk-application-prefer-dark-theme=true/" "$settings"
+    done
+    #sed -i -e "s/gtk-theme-name=.*/gtk-theme-name=Equilux-compact/" $gtk3_settings
+    #sed -i -e "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Dark/" $gtk3_settings
 
     echo "Dark theme enabled."
 elif [ $mode = "light" -o $mode = "mixed" ]
@@ -27,19 +34,22 @@ then
     sed -i -e "s/set background=dark/set background=light/" $vimrc
 
     # alacritty
-    sed -i -e "s/ - ~\/.config\/alacritty\/themes\/Molokai.yml/ #- ~\/.config\/alacritty\/themes\/Molokai.yml/" $alacritty_config
-    sed -i -e "s/#- ~\/.config\/alacritty\/themes\/PencilLight.yml/- ~\/.config\/alacritty\/themes\/PencilLight.yml/" $alacritty_config
+    sed -i -e "s/^$dark_alacritty_theme/# $dark_alacritty_theme/" $alacritty_config
+    sed -i -e "s/# $light_alacritty_theme/$light_alacritty_theme/" $alacritty_config
 
     # gtk
+    for settings in $settingsFiles; do
+        sed -i -e "s/gtk-application-prefer-dark-theme=true/gtk-application-prefer-dark-theme=false/" "$settings"
+    done
     if [ $mode = "light" ]
     then 
-        #sed -i -e "s/gtk-theme-name=.*/gtk-theme-name=Qogir-light/" $gtk_settings
-        #sed -i -e "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Light/" $gtk_settings
+        #sed -i -e "s/gtk-theme-name=.*/gtk-theme-name=Qogir-light/" $gtk3_settings
+        #sed -i -e "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus-Light/" $gtk3_settings
         echo "Light theme enabled."
     elif [ $mode = "mixed" ]
     then
-        #sed -i -e "s/gtk-theme-name=.*/gtk-theme-name=Qogir/" $gtk_settings
-        #sed -i -e "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus/" $gtk_settings
+        #sed -i -e "s/gtk-theme-name=.*/gtk-theme-name=Qogir/" $gtk3_settings
+        #sed -i -e "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=Papirus/" $gtk3_settings
         echo "Mixed theme enabled."
     fi
 else 
@@ -54,6 +64,8 @@ lxappearance
 # Change Plasma/QT color scheme.
 systemsettings5 kcm_colors
 qt5ct
+kvantummanager
+qt6ct
 
 # replace these with respective changes to 
 # $HOME/.config/gtk-3.0/settings.ini
