@@ -1,10 +1,11 @@
 TARGET_DIR=$HOME
 SOURCE_DIR=$HOME/dotfiles
 
-packages=(
+PACKAGES=(
     alacritty
     beets
     conky
+    doublecmd
     dunst
     i3
     jupyter
@@ -14,6 +15,7 @@ packages=(
     misc
     nitrogen
     picom
+    plasma
     ranger
     shells
     spyder
@@ -30,12 +32,19 @@ packages=(
     zathura
 )
 
-echo $packages
+echo "Specify the package you'd like to deploy (defaults to ALL)."
+read PACKAGE
+if [ "$PACKAGE" != "ALL" ] && [ "$PACKAGE" != "" ]; then 
+    PACKAGES=( ${PACKAGE} )
+    echo "Single package mode."
+else
+    echo "All package mode."
+fi
 
 echo "Performing dry run."
 echo ""
 
-for package in ${packages[@]}
+for package in ${PACKAGES[@]}
 do
     echo "Installing ${package}."
     stow -n -t ${TARGET_DIR} -d ${SOURCE_DIR} ${package}
@@ -47,7 +56,7 @@ read ANSWER
 
 if [ $ANSWER == 1 ]
 then
-    for package in ${packages[@]}
+    for package in ${PACKAGES[@]}
     do
         echo "Installing ${package}."
         stow -v -t ${TARGET_DIR} -d ${SOURCE_DIR} ${package}
